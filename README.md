@@ -32,7 +32,7 @@ Compose. You should fork this and adapt it to your own needs.
 
    ```
    127.0.0.1 ca.localhost
-   127.0.0.1 edlib.localhost
+   127.0.0.1 hub.localhost
    ```
 
    Alternatively, use the `CONTENTAUTHOR_HOST` and `HUB_HOST` environment
