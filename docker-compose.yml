@@ -1,0 +1,207 @@
+volumes:
+  ca_storage:
+  hub_storage:
+
+  caddy_config:
+  mariadb_data:
+  meilisearch_data:
+  postgres_data:
+
+services:
+
+
+  # ==============
+  # Content Author
+  # ==============
+
+  contentauthor:
+    image: ghcr.io/cerpus/edlib-contentauthor:php-latest
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment: &contentauthor-env
+      APP_KEY: ${CONTENTAUTHOR_KEY:-base64:7+Ezk6ajCYzjA+Oae+BPJdxEE57+c6ncan08Ke7ZA0Q=}
+      APP_URL: https://${CONTENTAUTHOR_HOST:-ca.localhost}
+      CACHE_DRIVER: redis
+      DB_HOST: mariadb
+      DB_DATABASE: mariadb
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+      ENABLE_EDLIB2: 'false'
+      H5P_CONSUMER_KEY: h5p
+      H5P_CONSUMER_SECRET: secret2
+      LOG_CHANNEL: stderr
+      LOG_STDERR_FORMATTER: 'null'
+      REDIS_DB: '0'
+      REDIS_CACHE_DB: '1'
+      REDIS_HOST: redis
+      SESSION_DRIVER: redis
+    healthcheck:
+      test: [CMD, nc, -z, localhost, '9000']
+    platform: linux/amd64
+    volumes:
+      - ca_storage:/app/storage
+
+  contentauthor-cron:
+    image: ghcr.io/cerpus/edlib-contentauthor:php-latest
+    command: [php, artisan, 'schedule:work']
+    depends_on:
+      contentauthor-startup: { condition: service_completed_successfully }
+    environment:
+      <<: *contentauthor-env
+    platform: linux/amd64
+
+  contentauthor-startup:
+    image: ghcr.io/cerpus/edlib-contentauthor:php-latest
+    command: [startup.sh]
+    depends_on:
+      mariadb: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      <<: *contentauthor-env
+    platform: linux/amd64
+
+  contentauthor-web:
+    image: ghcr.io/cerpus/edlib-contentauthor:web-latest
+    depends_on:
+      contentauthor: { condition: service_healthy }
+    environment:
+      PHP_FPM_HOST: contentauthor:9000
+    platform: linux/amd64
+
+  contentauthor-worker:
+    image: ghcr.io/cerpus/edlib-contentauthor:php-latest
+    command: [php, artisan, 'queue:work']
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      <<: *contentauthor-env
+    platform: linux/amd64
+
+
+  # ===
+  # Hub
+  # ===
+
+  hub:
+    image: ghcr.io/cerpus/edlib-hub:php-latest
+    depends_on:
+      hub-startup: { condition: service_completed_successfully }
+    environment: &hub-env
+      APP_KEY: ${HUB_KEY:-base64:NCOVMuNgbmy7dgOpn4bD1CyM32VHrpPrCQO6xSa/NUU=}
+      APP_URL: https://${HUB_HOST:-hub.localhost}
+      CACHE_DRIVER: redis
+      DB_HOST: postgres
+      DB_DATABASE: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_KEY: masterkey1234567
+      REDIS_DB: '2'
+      REDIS_CACHE_DB: '3'
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+    healthcheck:
+      test: [CMD, nc, -z, localhost, '9000']
+    platform: linux/amd64
+
+  hub-cron:
+    image: ghcr.io/cerpus/edlib-hub:php-latest
+    command: [php, artisan, 'schedule:work']
+    depends_on:
+      hub-startup: { condition: service_completed_successfully }
+    environment:
+      <<: *hub-env
+    platform: linux/amd64
+
+  hub-startup:
+    image: ghcr.io/cerpus/edlib-hub:php-latest
+    command: startup.sh
+    depends_on:
+      meilisearch: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      <<: *hub-env
+    platform: linux/amd64
+
+  hub-web:
+    image: ghcr.io/cerpus/edlib-hub:web-latest
+    depends_on:
+      hub: { condition: service_healthy }
+    environment:
+      PHP_FPM_HOST: hub:9000
+    platform: linux/amd64
+
+  hub-worker:
+    image: ghcr.io/cerpus/edlib-hub:php-latest
+    command: [php, artisan, 'queue:work']
+    depends_on:
+      hub-startup: { condition: service_completed_successfully }
+    environment:
+      <<: *hub-env
+    platform: linux/amd64
+
+
+  # ===
+  # Web
+  # ===
+
+  web:
+    image: caddy:2-alpine
+    depends_on:
+      contentauthor: { condition: service_healthy }
+      hub: { condition: service_healthy }
+    networks:
+      default:
+        aliases:
+          - ${CONTENTAUTHOR_HOST:-ca.localhost}
+          - ${HUB_HOST:-hub.localhost}
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - caddy_config:/config
+      - ./data/caddy/data:/data
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:r
+
+
+  # ==================
+  # Auxiliary services
+  # ==================
+
+  mariadb:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+    healthcheck:
+      test: [CMD, mariadb, -uroot, -psecret, "-eSELECT 1"]
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    environment:
+      MEILI_NO_ANALYTICS: 'true'
+      MEILI_MASTER_KEY: masterkey1234567
+    healthcheck:
+      test: [CMD, curl, -f, http://localhost:7700/health]
+    volumes:
+      - meilisearch_data:/meili_data
+
+  postgres:
+    image: postgres:16-alpine
+    healthcheck:
+      test: [CMD, pg_isready]
+    environment:
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: [CMD, redis-cli, ping]

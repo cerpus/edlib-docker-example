@@ -1,0 +1,19 @@
+{
+  log default {
+    format console
+  }
+}
+
+http://localhost {
+  respond "healthy"
+}
+
+{$CONTENTAUTHOR_HOST:ca.localhost} {
+  reverse_proxy contentauthor-web:80
+  log
+}
+
+{$HUB_HOST:hub.localhost} {
+  reverse_proxy hub-web:80
+  log
+}
