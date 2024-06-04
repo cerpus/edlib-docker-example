@@ -3,9 +3,22 @@
 This repository demonstrates a production setup for Edlib 3 using Docker
 Compose. You should fork this and adapt it to your own needs.
 
-## TODO
+## Prerequisites
 
-* Admin user for CA, or CA admin via hub
+* Docker
+* Admin access on your computer
+
+## Getting access to private packages
+
+1. [Create a personal access token on GitHub][1]. It must have `read:packages`
+   permissions.
+
+2. Log in with your GitHub username and newly generated access token (**not**
+   your password):
+
+   ```
+   docker login ghcr.io
+   ```
 
 ## Usage
 
@@ -42,3 +55,11 @@ docker compose exec hub php artisan edlib:create-admin-user you@example.com
 
 * For a live production environment, generate new keys for Content Author and
   the Hub. Security relies on these keys being unique and secret.
+
+## TODO
+
+* Grant access to CA admin via hub
+* Icon downloading (containers must accept self-signed certs, if any)
+
+
+[1]: https://github.com/settings/tokens/new?scopes=read:packages&description=Edlib%20packages
