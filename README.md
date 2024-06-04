@@ -20,6 +20,12 @@ Compose. You should fork this and adapt it to your own needs.
    docker login ghcr.io
    ```
 
+3. Test that you have all the necessary access using this command:
+
+   ```
+   docker pull ghcr.io/cerpus/edlib-hub:php-latest
+   ```
+
 ## Usage
 
 1. Add to your `/etc/hosts` or `C:\Windows\System32\Drivers\etc\hosts`
