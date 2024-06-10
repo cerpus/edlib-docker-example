@@ -46,7 +46,7 @@ Compose. You should fork this and adapt it to your own needs.
    docker compose up -d
    ```
 
-3. Navigate to the `caddy/data/caddy/data` directory and install the root
+3. Navigate to the `data/caddy/data/caddy` directory and install the root
    certificate (if using default hosts) on your machine.
 
 4. Open <https://hub.localhost/> in your browser.
