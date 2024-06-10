@@ -21,7 +21,8 @@ Compose. You should fork this and adapt it to your own needs.
    docker login ghcr.io
    ```
 
-3. Test that you have all the necessary access using this command:
+3. Test that you have all the necessary access using this command (the image
+   should download):
 
    ```bash
    docker pull --platform=linux/amd64 ghcr.io/cerpus/edlib-hub:php-latest
@@ -82,7 +83,8 @@ environment, you will want to change these:
 * `HUB_HOST`: the host name for the Hub (defaults to `hub.localhost`).
 
 It is **critical** to not be using the default key/secret in a live
-environment.
+environment. The databases are not exposed on the network, so using the
+defaults is fine for these.
 
 You can add these in an `.env` file, which Docker will read, e.g.:
 
