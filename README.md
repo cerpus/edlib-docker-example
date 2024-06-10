@@ -35,10 +35,13 @@ Compose. You should fork this and adapt it to your own needs.
    127.0.0.1 hub.localhost
    ```
 
-   Alternatively, use the `CONTENTAUTHOR_HOST` and `HUB_HOST` environment
-   variables to host Edlib on a domain of your choosing. Note that the web
+   To host Edlib on a real domain, use the `CONTENTAUTHOR_HOST` and `HUB_HOST`
+   environment variables to host Edlib on a domain of your choosing. The web
    server will attempt to request TLS certificates from Let's Encrypt for the
-   host you specify:
+   hosts you specify, so these must be valid on the internet.
+
+   **Note for WSL users**: you must edit the hosts file belonging to Windows,
+   not WSL.
 
 2. Bring up the services.
 
