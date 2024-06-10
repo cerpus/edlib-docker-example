@@ -28,8 +28,9 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: secret
       ENABLE_EDLIB2: 'false'
-      H5P_CONSUMER_KEY: h5p
-      H5P_CONSUMER_SECRET: secret2
+      H5P_CONSUMER_KEY: ${CONTENTAUTHOR_KEY:-h5p}
+      H5P_CONSUMER_SECRET: ${CONTENTAUTHOR_SECRET:-secret2}
+      H5P_IS_HUB_ENABLED: 'true'
       LOG_CHANNEL: stderr
       LOG_STDERR_FORMATTER: 'null'
       REDIS_DB: '0'
@@ -55,7 +56,7 @@ services:
 
   contentauthor-startup:
     image: ghcr.io/cerpus/edlib-contentauthor:php-latest
-    command: [startup.sh]
+    command: [prod-startup.sh]
     depends_on:
       mariadb: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -64,6 +65,7 @@ services:
     platform: linux/amd64
     volumes:
       - ca_storage:/app/storage
+      - ./contentauthor/startup.sh:/usr/local/bin/prod-startup.sh:ro
 
   contentauthor-web:
     image: ghcr.io/cerpus/edlib-contentauthor:web-latest
@@ -72,6 +74,8 @@ services:
     environment:
       PHP_FPM_HOST: contentauthor:9000
     platform: linux/amd64
+    volumes:
+      - ca_storage:/app/storage:ro
 
   contentauthor-worker:
     image: ghcr.io/cerpus/edlib-contentauthor:php-latest
@@ -98,6 +102,9 @@ services:
       APP_KEY: ${HUB_KEY:-base64:NCOVMuNgbmy7dgOpn4bD1CyM32VHrpPrCQO6xSa/NUU=}
       APP_URL: https://${HUB_HOST:-hub.localhost}
       CACHE_DRIVER: redis
+      CONTENTAUTHOR_HOST: ${CONTENTAUTHOR_HOST:-ca.localhost}
+      CONTENTAUTHOR_KEY: ${CONTENTAUTHOR_KEY:-h5p}
+      CONTENTAUTHOR_SECRET: ${CONTENTAUTHOR_SECRET:-secret2}
       DB_HOST: postgres
       DB_DATABASE: postgres
       DB_USERNAME: postgres
@@ -128,7 +135,7 @@ services:
 
   hub-startup:
     image: ghcr.io/cerpus/edlib-hub:php-latest
-    command: startup.sh
+    command: [prod-startup.sh]
     depends_on:
       meilisearch: { condition: service_healthy }
       postgres: { condition: service_healthy }
@@ -138,6 +145,7 @@ services:
     platform: linux/amd64
     volumes:
       - hub_storage:/app/storage
+      - ./hub/startup.sh:/usr/local/bin/prod-startup.sh:ro
 
   hub-web:
     image: ghcr.io/cerpus/edlib-hub:web-latest
@@ -146,6 +154,8 @@ services:
     environment:
       PHP_FPM_HOST: hub:9000
     platform: linux/amd64
+    volumes:
+      - hub_storage:/app/storage:ro
 
   hub-worker:
     image: ghcr.io/cerpus/edlib-hub:php-latest
