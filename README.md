@@ -56,16 +56,20 @@ Compose. You should fork this and adapt it to your own needs.
    docker compose ps
    ```
 
-4. Navigate to the `data/caddy/data/caddy` directory and install the root
-   certificates that have been automatically generated in this directory on
-   your computer.
+4. Navigate to the `data/caddy/data/caddy/pki/authorities/local` directory and
+   install the root certificates that have been automatically generated in this
+   directory on your computer.
+
+   You will need to look up how this works on your operating system. If
+   successful, you will be able to visit <https://hub.localhost> and
+   <https://ca.localhost> without warnings.
 
    (This is not necessary when using real host names.)
 
 5. Open <https://hub.localhost/>, or your custom domain if applicable, in your
    browser.
 
-## Setting up a user account
+## Setting up an admin user account
 
 ```bash
 docker compose exec hub php artisan edlib:create-admin-user you@example.com
@@ -86,18 +90,18 @@ It is **critical** to not be using the default key/secret in a live
 environment. The databases are not exposed on the network, so using the
 defaults is fine for these.
 
-You can add these in an `.env` file, which Docker will read, e.g.:
+You can add these in a `.env` file, which Docker will read, e.g.:
 
 ```
 CONTENTAUTHOR_KEY=contentauthor
-CONTENTAUTHOR_SECRET=my-very-long-secret-key
 HUB_HOST=hub.edlib.example.com
+# more stuff ...
 ```
 
 ## Automatic HTTPS
 
-By default, self-signed root certificates are generated, and short-lived
-certificates generated for the Hub and Content Author.
+By default, self-signed certificates are generated for the Hub and Content
+Author.
 
 To use real certificates, change the host names as described above. The web
 server will attempt to request real certificates for these from Let's Encrypt.
@@ -105,6 +109,12 @@ The hostnames and the web server must be reachable over the public internet, or
 this won't work.
 
 ## FAQ
+
+### Opening Content Author from the Hub gives me a certificate error, why?
+
+You accepted the certificate in the browser for the Hub, but did not install
+the actual root certificate on your computer. Install the actual root
+certificate and try again.
 
 ### I messed something up, how do I reset?
 
