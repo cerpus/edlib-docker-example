@@ -222,6 +222,7 @@ services:
       test: [CMD, pg_isready]
     environment:
       POSTGRES_PASSWORD: secret
+      PGUSER: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
