@@ -56,9 +56,8 @@ Compose. You should fork this and adapt it to your own needs.
    docker compose ps
    ```
 
-4. Navigate to the `data/caddy/data/caddy/pki/authorities/local` directory and
-   install the root certificates that have been automatically generated in this
-   directory on your computer.
+4. Navigate to the `data/caddy/data/caddy/pki/authorities/local` directory, and
+   install the root certificate (`root.crt`) on your computer.
 
    You will need to look up how this works on your operating system. If
    successful, you will be able to visit <https://hub.localhost> and
