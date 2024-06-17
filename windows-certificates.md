@@ -28,7 +28,7 @@
 
    ![](img/c6.png)
 
-7. Thank the wizard and click **Next**.
+7. Thank the wizard and click **Finish**.
 
    ![](img/c7.png)
 
