@@ -9,25 +9,6 @@ Compose. You should fork this and adapt it to your own needs.
 * Admin access on your computer or server
 * Port 80 (tcp) and 443 (tcp/udp) available
 
-## Getting access to private packages
-
-1. [Create a personal access token on GitHub][1]. It must have `read:packages`
-   permissions.
-
-2. Log in with your GitHub username and newly generated access token (**not**
-   your password):
-
-   ```bash
-   docker login ghcr.io
-   ```
-
-3. Test that you have all the necessary access using this command (the image
-   should download):
-
-   ```bash
-   docker pull --platform=linux/amd64 ghcr.io/cerpus/edlib-hub:php-latest
-   ```
-
 ## Usage
 
 1. Clone the git repository and navigate there.
@@ -42,7 +23,7 @@ Compose. You should fork this and adapt it to your own needs.
    **Note for WSL users**: you must edit the hosts file belonging to Windows,
    not WSL.
 
-   (This is not necessary when using real host names.)
+   (This step is not necessary when using real host names.)
 
 3. Bring up the services.
 
@@ -59,11 +40,15 @@ Compose. You should fork this and adapt it to your own needs.
 4. Navigate to the `data/caddy/data/caddy/pki/authorities/local` directory, and
    install the root certificate (`root.crt`) on your computer.
 
-   You will need to look up how this works on your operating system. If
-   successful, you will be able to visit <https://hub.localhost> and
+   On Windows, please follow [these instructions](windows-certificates.md).
+
+   On macOS, open the certificate in Keychain Access, then mark it as trusted
+   for all purposes.
+
+   If successful, you will be able to visit <https://hub.localhost> and
    <https://ca.localhost> without warnings.
 
-   (This is not necessary when using real host names.)
+   (This step is not necessary when using real host names.)
 
 5. Open <https://hub.localhost/>, or your custom domain if applicable, in your
    browser.
@@ -130,6 +115,3 @@ restrictions on whether web browsers will accept them or not. Additionally,
 there are a number of surprising changes in behaviour between HTTP and HTTPS
 sites. Therefore, Edlib and this example setup have been developed only with
 HTTPS in mind.
-
-
-[1]: https://github.com/settings/tokens/new?scopes=read:packages&description=Edlib%20packages
