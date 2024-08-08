@@ -25,7 +25,30 @@ Compose. You should fork this and adapt it to your own needs.
 
    (This step is not necessary when using real host names.)
 
-3. Bring up the services.
+3. Copy `.env.example` to `.env` and edit it. At minimum, the following
+   variables must be changed:
+
+   * `CONTENTAUTHOR_APP_KEY`: the cryptographic secret for Content Author
+   * `CONTENTAUTHOR_LTI_SECRET`: the OAuth consumer secret for Content Author
+   * `HUB_APP_KEY`: the cryptographic secret for the Hub
+
+   `CONTENTAUTHOR_APP_KEY` and `HUB_APP_KEY` must each be 32-byte base64-encoded
+   secrets, prefixed with `base64:`. The following command can be used to
+   generate an appropriate secret:
+
+   ```bash
+   echo "base64:$(openssl rand -base64 32)"
+   ```
+
+   `CONTENTAUTHOR_LTI_SECRET` does not need special consideration, just type
+   something random and long here.
+
+   If you wish to change the host names, change the following:
+
+   * `CONTENTAUTHOR_HOST`
+   * `HUB_HOST`
+
+4. Bring up the services.
 
    ```bash
    docker compose up -d
@@ -37,7 +60,7 @@ Compose. You should fork this and adapt it to your own needs.
    docker compose ps
    ```
 
-4. Navigate to the `data/caddy/data/caddy/pki/authorities/local` directory, and
+5. Navigate to the `data/caddy/data/caddy/pki/authorities/local` directory, and
    install the root certificate (`root.crt`) on your computer.
 
    On Windows, please follow [these instructions](windows-certificates.md).
@@ -50,36 +73,13 @@ Compose. You should fork this and adapt it to your own needs.
 
    (This step is not necessary when using real host names.)
 
-5. Open <https://hub.localhost/>, or your custom domain if applicable, in your
+6. Open <https://hub.localhost/>, or your custom domain if applicable, in your
    browser.
 
 ## Setting up an admin user account
 
 ```bash
 docker compose exec hub php artisan edlib:create-admin-user you@example.com
-```
-
-## Environment variables
-
-For a local setup, you do not have to customise anything, but for a live
-environment, you will want to change these:
-
-* `CONTENTAUTHOR_HOST`: the host name for Content Author (defaults to
-  `ca.localhost`).
-* `CONTENTAUTHOR_KEY`: the OAuth consumer key for Content Author.
-* `CONTENTAUTHOR_SECRET`: the OAuth consumer secret for Content Author.
-* `HUB_HOST`: the host name for the Hub (defaults to `hub.localhost`).
-
-It is **critical** to not be using the default key/secret in a live
-environment. The databases are not exposed on the network, so using the
-defaults is fine for these.
-
-You can add these in a `.env` file, which Docker will read, e.g.:
-
-```
-CONTENTAUTHOR_KEY=contentauthor
-HUB_HOST=hub.edlib.example.com
-# more stuff ...
 ```
 
 ## Automatic HTTPS
@@ -89,7 +89,7 @@ Author.
 
 To use real certificates, change the host names as described above. The web
 server will attempt to request real certificates for these from Let's Encrypt.
-The hostnames and the web server must be reachable over the public internet, or
+The host names and the web server must be reachable over the public internet, or
 this won't work.
 
 ## FAQ

@@ -1,9 +1,9 @@
 #!/bin/sh
-set -e
+set -eu
 
-CA="${CONTENTAUTHOR_HOST:-ca.localhost}"
-KEY="${CONTENTAUTHOR_KEY:-h5p}"
-SECRET="${CONTENTAUTHOR_SECRET:-secret2}"
+CA="${CONTENTAUTHOR_HOST}"
+KEY="${CONTENTAUTHOR_LTI_KEY}"
+SECRET="${CONTENTAUTHOR_LTI_SECRET}"
 
 startup.sh
 

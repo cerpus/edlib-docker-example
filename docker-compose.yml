@@ -20,7 +20,7 @@ services:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
     environment: &contentauthor-env
-      APP_KEY: ${CONTENTAUTHOR_KEY:-base64:7+Ezk6ajCYzjA+Oae+BPJdxEE57+c6ncan08Ke7ZA0Q=}
+      APP_KEY: ${CONTENTAUTHOR_APP_KEY}
       APP_URL: https://${CONTENTAUTHOR_HOST:-ca.localhost}
       CACHE_DRIVER: redis
       DB_HOST: mariadb
@@ -28,8 +28,8 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: secret
       ENABLE_EDLIB2: 'false'
-      H5P_CONSUMER_KEY: ${CONTENTAUTHOR_KEY:-h5p}
-      H5P_CONSUMER_SECRET: ${CONTENTAUTHOR_SECRET:-secret2}
+      H5P_CONSUMER_KEY: ${CONTENTAUTHOR_LTI_KEY:-h5p}
+      H5P_CONSUMER_SECRET: ${CONTENTAUTHOR_LTI_SECRET}
       H5P_IS_HUB_ENABLED: 'true'
       LOG_CHANNEL: stderr
       LOG_STDERR_FORMATTER: 'null'
@@ -99,12 +99,9 @@ services:
     depends_on:
       hub-startup: { condition: service_completed_successfully }
     environment: &hub-env
-      APP_KEY: ${HUB_KEY:-base64:NCOVMuNgbmy7dgOpn4bD1CyM32VHrpPrCQO6xSa/NUU=}
+      APP_KEY: ${HUB_APP_KEY}
       APP_URL: https://${HUB_HOST:-hub.localhost}
       CACHE_DRIVER: redis
-      CONTENTAUTHOR_HOST: ${CONTENTAUTHOR_HOST:-ca.localhost}
-      CONTENTAUTHOR_KEY: ${CONTENTAUTHOR_KEY:-h5p}
-      CONTENTAUTHOR_SECRET: ${CONTENTAUTHOR_SECRET:-secret2}
       DB_HOST: postgres
       DB_DATABASE: postgres
       DB_USERNAME: postgres
@@ -142,6 +139,9 @@ services:
       redis: { condition: service_healthy }
     environment:
       <<: *hub-env
+      CONTENTAUTHOR_HOST: ${CONTENTAUTHOR_HOST:-ca.localhost}
+      CONTENTAUTHOR_LTI_KEY: ${CONTENTAUTHOR_LTI_KEY:-h5p}
+      CONTENTAUTHOR_LTI_SECRET: ${CONTENTAUTHOR_LTI_SECRET}
     platform: linux/amd64
     volumes:
       - hub_storage:/app/storage
