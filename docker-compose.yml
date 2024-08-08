@@ -178,6 +178,9 @@ services:
     depends_on:
       contentauthor: { condition: service_healthy }
       hub: { condition: service_healthy }
+    environment:
+      CONTENTAUTHOR_HOST: ${CONTENTAUTHOR_HOST:-ca.localhost}
+      HUB_HOST: ${HUB_HOST:-hub.localhost}
     networks:
       default:
         aliases:
