@@ -8,23 +8,19 @@ if [ ! -f "storage/app/first-time-setup-completed" ]; then
   php artisan h5p:library-hub-cache
   php artisan h5p:library-install \
       H5P.Accordion \
-      H5P.AppearIn \
       H5P.Audio \
       H5P.AudioRecorder \
       H5P.Blanks \
-      H5P.Boardgame \
       H5P.CoursePresentation \
       H5P.Dialogcards \
       H5P.DocumentationTool \
       H5P.DragQuestion \
       H5P.DragText \
       H5P.Flashcards \
-      H5P.GreetingCard \
       H5P.GuessTheAnswer \
       H5P.IFrameEmbed \
       H5P.ImageHotspotQuestion \
       H5P.ImageHotspots \
-      H5P.ImpressPresentation \
       H5P.InteractiveVideo \
       H5P.MarkTheWords \
       H5P.MemoryGame \
@@ -35,8 +31,7 @@ if [ ! -f "storage/app/first-time-setup-completed" ]; then
       H5P.SingleChoiceSet \
       H5P.Summary \
       H5P.Timeline \
-      H5P.TrueFalse \
-      H5P.TwitterUserFeed
+      H5P.TrueFalse
 
   touch storage/app/first-time-setup-completed
 fi
