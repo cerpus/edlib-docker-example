@@ -102,10 +102,18 @@ certificate and try again.
 
 ### I messed something up, how do I reset?
 
-* Delete the contents of `data`
+* Delete the `data` directory
 
-* ```bash
+* Delete the containers and their volumes (**this removes all data**)
+
+  ```bash
   docker compose down --volumes
+  ```
+
+* Get the latest versions of the Docker images
+
+  ```bash
+  docker compose pull
   ```
 
 ### May I run this without HTTPS?
@@ -115,3 +123,8 @@ restrictions on whether web browsers will accept them or not. Additionally,
 there are a number of surprising changes in behaviour between HTTP and HTTPS
 sites. Therefore, Edlib and this example setup have been developed only with
 HTTPS in mind.
+
+## Reporting issues
+
+Bugs can be reported on the [Edlib issue
+tracker](https://github.com/cerpus/Edlib/issues).
