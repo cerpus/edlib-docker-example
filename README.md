@@ -124,6 +124,32 @@ there are a number of surprising changes in behaviour between HTTP and HTTPS
 sites. Therefore, Edlib and this example setup have been developed only with
 HTTPS in mind.
 
+### How do I run behind a reverse proxy?
+
+Since the automatic HTTPS setup isn't appropriate for reverse proxying, it is
+best to disable it, and expose the individual services for proxying.
+
+In docker-compose.yml, remove the `web` service, then add `ports` sections to
+the `contentauthor-web` and `hub-web` services:
+
+```diff
+ services:
+   contentauthor-web:
+     # ...
++    ports:
++      - 127.0.0.1:8080:80
+     # ...
+
+   hub-web:
+     # ...
++    ports:
++      - 127.0.0.1:8081:80
+     # ...
+```
+
+This exposes the Hub and Content Author services on `127.0.0.1:8080` and
+`127.0.0.1:8081`, respectively.
+
 ## Reporting issues
 
 Bugs can be reported on the [Edlib issue
