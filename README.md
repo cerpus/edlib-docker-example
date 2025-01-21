@@ -1,6 +1,6 @@
-# Edlib 3 production setup example
+# Edlib production setup example
 
-This repository demonstrates a production setup for Edlib 3 using Docker
+This repository demonstrates a production setup for Edlib using Docker
 Compose. You should fork this and adapt it to your own needs.
 
 ## Prerequisites
